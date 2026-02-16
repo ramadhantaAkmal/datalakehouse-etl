@@ -12,7 +12,7 @@ from pendulum import duration
 from main import main
 
 with DAG(
-    dag_id='google_jobs_scrape',
+    dag_id='pipeline-dag',
     start_date = datetime(2025,11,9),
     schedule= '@weekly',
     catchup=False,

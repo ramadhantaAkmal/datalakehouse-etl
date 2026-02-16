@@ -9,6 +9,8 @@ from iceberg.iceberg_transform import transform_load_slv_gld
 
 def main():
     current_date = datetime.date.today()
+    
+    #Extraction
     df = ingest()
     df = df.rename({"job_type": "schedule_type"})
     df = df.rename({"company": "company_name"})
@@ -27,9 +29,10 @@ def main():
         compression="zstd",
         partition_by="ingestion_date"
     )
-    
+     
+    #Transform and Load
     transform_load_brz(df)
     transform_load_slv_gld(df)
     print("Data transformed and loaded successfully")
 
-main()
+# main()

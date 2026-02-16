@@ -4,12 +4,12 @@ def catalog_load()->Catalog:
     return load_catalog(
         "rest-catalog",
         type="rest",
-        uri="http://localhost:8181",
+        uri="http://iceberg-rest:8181",
         warehouse="s3://warehouse/",
         **{
             # MinIO (S3-compatible)
             "fs.native-s3.enabled": "true",
-            "s3.endpoint": "http://localhost:9000",
+            "s3.endpoint": "http://minio:9000",
             "s3.region": "us-east-1",
             "s3.access-key-id": "admin",
             "s3.secret-access-key": "password",
