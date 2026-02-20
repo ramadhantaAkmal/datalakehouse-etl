@@ -58,12 +58,6 @@ class JobType(Enum):
 
 
 class Country(Enum):
-    """
-    Gets the subdomain for Indeed and Glassdoor.
-    The second item in the tuple is the subdomain (and API country code if there's a ':' separator) for Indeed
-    The third item in the tuple is the subdomain (and tld if there's a ':' separator) for Glassdoor
-    """
-
     ARGENTINA = ("argentina", "ar", "com.ar")
     AUSTRALIA = ("australia", "au", "com.au")
     AUSTRIA = ("austria", "at", "at")
@@ -243,56 +237,17 @@ class JobPost(BaseModel):
     job_url: str
     job_url_direct: str | None = None
     location: Optional[Location]
-
     description: str | None = None
     company_url: str | None = None
     company_url_direct: str | None = None
-
     job_type: list[JobType] | None = None
-    compensation: Compensation | None = None
     date_posted: date | None = None
-    emails: list[str] | None = None
     is_remote: bool | None = None
-    listing_type: str | None = None
-
-    # LinkedIn specific
     job_level: str | None = None
 
-    # LinkedIn and Indeed specific
-    company_industry: str | None = None
-
-    # Indeed specific
-    company_addresses: str | None = None
-    company_num_employees: str | None = None
-    company_revenue: str | None = None
-    company_description: str | None = None
-    company_logo: str | None = None
-    banner_photo_url: str | None = None
-
-    # LinkedIn only atm
-    job_function: str | None = None
-
-    # Naukri specific
-    skills: list[str] | None = None  #from tagsAndSkills
-    experience_range: str | None = None  #from experienceText
-    company_rating: float | None = None  #from ambitionBoxData.AggregateRating
-    company_reviews_count: int | None = None  #from ambitionBoxData.ReviewsCount
-    vacancy_count: int | None = None  #from vacancy
-    work_from_home_type: str | None = None  #from clusters.wfhType (e.g., "Hybrid", "Remote")
 
 class JobResponse(BaseModel):
     jobs: list[JobPost] = []
-
-
-class Site(Enum):
-    LINKEDIN = "linkedin"
-    INDEED = "indeed"
-    ZIP_RECRUITER = "zip_recruiter"
-    GLASSDOOR = "glassdoor"
-    GOOGLE = "google"
-    BAYT = "bayt"
-    NAUKRI = "naukri"
-    BDJOBS = "bdjobs"  # Add this line
 
 
 class SalarySource(Enum):
@@ -301,7 +256,6 @@ class SalarySource(Enum):
 
 
 class ScraperInput(BaseModel):
-    site_type: list[Site]
     search_term: str | None = None
     google_search_term: str | None = None
 
@@ -324,9 +278,8 @@ class ScraperInput(BaseModel):
 
 class Scraper(ABC):
     def __init__(
-        self, site: Site, proxies: list[str] | None = None, ca_cert: str | None = None, user_agent: str | None = None
+        self,  proxies: list[str] | None = None, ca_cert: str | None = None, user_agent: str | None = None
     ):
-        self.site = site
         self.proxies = proxies
         self.ca_cert = ca_cert
         self.user_agent = user_agent

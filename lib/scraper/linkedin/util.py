@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup
 
-from jobspy.model import JobType, Location
-from jobspy.util import get_enum_from_job_type
-
+from scraper.model import JobType, Location
+from scraper.util import get_enum_from_job_type
 
 def job_type_code(job_type_enum: JobType) -> str:
     return {
@@ -60,29 +59,6 @@ def parse_job_level(soup_job_level: BeautifulSoup) -> str | None:
             job_level = job_level_span.get_text(strip=True)
 
     return job_level
-
-
-def parse_company_industry(soup_industry: BeautifulSoup) -> str | None:
-    """
-    Gets the company industry from job page
-    :param soup_industry:
-    :return: str
-    """
-    h3_tag = soup_industry.find(
-        "h3",
-        class_="description__job-criteria-subheader",
-        string=lambda text: "Industries" in text,
-    )
-    industry = None
-    if h3_tag:
-        industry_span = h3_tag.find_next_sibling(
-            "span",
-            class_="description__job-criteria-text description__job-criteria-text--criteria",
-        )
-        if industry_span:
-            industry = industry_span.get_text(strip=True)
-
-    return industry
 
 
 def is_job_remote(title: dict, description: str, location: Location) -> bool:

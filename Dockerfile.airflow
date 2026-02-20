@@ -15,7 +15,9 @@ RUN python -m pip install --no-cache-dir \
     requests==2.31.0 \
     beautifulsoup4==4.12.2 \
     pandas \
-    numpy \
     tls-client==1.0.1 \
     markdownify==1.1.0 \
-    regex==2024.4.28
+    regex==2024.4.28  \
+    langchain \
+    langchain-ollama \
+    langchain-chroma

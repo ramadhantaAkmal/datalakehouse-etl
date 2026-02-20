@@ -5,35 +5,30 @@ import random
 import time
 from datetime import datetime
 from typing import Optional
-from urllib.parse import urlparse, urlunparse, unquote
+from urllib.parse import unquote
 
 import regex as re
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-from jobspy.exception import LinkedInException
-from jobspy.linkedin.constant import headers
-from jobspy.linkedin.util import (
+from scraper.exception import LinkedInException
+from scraper.linkedin.constant import headers
+from scraper.linkedin.util import (
     is_job_remote,
     job_type_code,
     parse_job_type,
     parse_job_level,
-    parse_company_industry
 )
-from jobspy.model import (
+from scraper.model import (
     JobPost,
     Location,
     JobResponse,
     Country,
-    Compensation,
     DescriptionFormat,
     Scraper,
     ScraperInput,
-    Site,
 )
-from jobspy.util import (
-    extract_emails_from_text,
-    currency_parser,
+from scraper.util import (
     markdown_converter,
     plain_converter,
     create_session,
@@ -51,12 +46,12 @@ class LinkedIn(Scraper):
     jobs_per_page = 25
 
     def __init__(
-        self, proxies: list[str] | str | None = None, ca_cert: str | None = None, user_agent: str | None = None
+        self, proxies: list[str] | str | None = None, ca_cert: str | None = None
     ):
         """
         Initializes LinkedInScraper with the LinkedIn job search url
         """
-        super().__init__(Site.LINKEDIN, proxies=proxies, ca_cert=ca_cert)
+        super().__init__(proxies=proxies, ca_cert=ca_cert)
         self.session = create_session(
             proxies=self.proxies,
             ca_cert=ca_cert,
@@ -155,6 +150,9 @@ class LinkedIn(Scraper):
 
                     try:
                         fetch_desc = scraper_input.linkedin_fetch_description
+                        # title_tag = job_card.find("span", class_="sr-only")
+                        # title = title_tag.get_text(strip=True) if title_tag else "N/A"
+                        # if scraper_input.search_term.lower() in title.lower():
                         job_post = self._process_job(job_card, job_id, fetch_desc)
                         if job_post:
                             job_list.append(job_post)
@@ -173,32 +171,13 @@ class LinkedIn(Scraper):
     def _process_job(
         self, job_card: Tag, job_id: str, full_descr: bool
     ) -> Optional[JobPost]:
-        salary_tag = job_card.find("span", class_="job-search-card__salary-info")
-
-        compensation = description = None
-        if salary_tag:
-            salary_text = salary_tag.get_text(separator=" ").strip()
-            salary_values = [currency_parser(value) for value in salary_text.split("-")]
-            salary_min = salary_values[0]
-            salary_max = salary_values[1]
-            currency = salary_text[0] if salary_text[0] != "$" else "USD"
-
-            compensation = Compensation(
-                min_amount=int(salary_min),
-                max_amount=int(salary_max),
-                currency=currency,
-            )
 
         title_tag = job_card.find("span", class_="sr-only")
         title = title_tag.get_text(strip=True) if title_tag else "N/A"
 
         company_tag = job_card.find("h4", class_="base-search-card__subtitle")
         company_a_tag = company_tag.find("a") if company_tag else None
-        company_url = (
-            urlunparse(urlparse(company_a_tag.get("href"))._replace(query=""))
-            if company_a_tag and company_a_tag.has_attr("href")
-            else ""
-        )
+       
         company = company_a_tag.get_text(strip=True) if company_a_tag else "N/A"
 
         metadata_card = job_card.find("div", class_="base-search-card__metadata")
@@ -226,20 +205,14 @@ class LinkedIn(Scraper):
             id=f"li-{job_id}",
             title=title,
             company_name=company,
-            company_url=company_url,
             location=location,
             is_remote=is_remote,
             date_posted=date_posted,
             job_url=f"{self.base_url}/jobs/view/{job_id}",
-            compensation=compensation,
             job_type=job_details.get("job_type"),
             job_level=job_details.get("job_level", "").lower(),
-            company_industry=job_details.get("company_industry"),
             description=job_details.get("description"),
             job_url_direct=job_details.get("job_url_direct"),
-            emails=extract_emails_from_text(description),
-            company_logo=job_details.get("company_logo"),
-            job_function=job_details.get("job_function"),
         )
 
     def _get_job_details(self, job_id: str) -> dict:
@@ -270,31 +243,12 @@ class LinkedIn(Scraper):
                 description = markdown_converter(description)
             elif self.scraper_input.description_format == DescriptionFormat.PLAIN:
                 description = plain_converter(description)
-        h3_tag = soup.find(
-            "h3", text=lambda text: text and "Job function" in text.strip()
-        )
-
-        job_function = None
-        if h3_tag:
-            job_function_span = h3_tag.find_next(
-                "span", class_="description__job-criteria-text"
-            )
-            if job_function_span:
-                job_function = job_function_span.text.strip()
-
-        company_logo = (
-            logo_image.get("data-delayed-url")
-            if (logo_image := soup.find("img", {"class": "artdeco-entity-image"}))
-            else None
-        )
+       
         return {
             "description": description,
             "job_level": parse_job_level(soup),
-            "company_industry": parse_company_industry(soup),
             "job_type": parse_job_type(soup),
             "job_url_direct": self._parse_job_url_direct(soup),
-            "company_logo": company_logo,
-            "job_function": job_function,
         }
 
     def _get_location(self, metadata_card: Optional[Tag]) -> Location:
