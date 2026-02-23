@@ -17,12 +17,7 @@ An ETL pipeline for scraping job vacancy data from linkedin jobs section using B
 
 ## Architecture diagram
 
-![Architecture diagram](./readme-assets/etl-datalakehouse-flow.png)
-
-## n8n workflow
-
-![discord notifier](./readme-assets/discord-notifier.png)
-![data extract](./readme-assets/jobdesc-data-extract.png)
+![Architecture diagram](./readme-assets/etl-datalakehouse-ai.png)
 
 ## Discord result
 
