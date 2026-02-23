@@ -20,4 +20,5 @@ RUN python -m pip install --no-cache-dir \
     regex==2024.4.28  \
     langchain \
     langchain-ollama \
-    langchain-chroma
+    langchain-chroma \
+    discord_webhook
