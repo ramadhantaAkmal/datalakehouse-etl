@@ -1,4 +1,4 @@
-﻿# ETL Datalakehouse job vacancy data
+﻿# ETL Datalakehouse for scrape job vacancy data with AI agents
 
 ## Overview
 An ETL pipeline for scraping job vacancy data from linkedin jobs section using Beautifulsoup , Minio as data lake, Apache Iceberg as table format, polars for transformation, docker as the environment, Airflow as the workflow scheduler, Trino for query engine and Superset for dashboard. This project also utilizing Langchain for making AI agents that can handle data extraction and also matching top 3 jobs from the processed data and send it to my own discord server. 
