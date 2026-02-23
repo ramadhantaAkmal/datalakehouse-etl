@@ -5,7 +5,7 @@
 
 access_key = "admin"
 secret_key = "password"
-minio_endpoint = "minio:9000"
+minio_endpoint = "localhost:9000"
 
 storage_options = {
     "aws_access_key_id": access_key,  # your MinIO access key

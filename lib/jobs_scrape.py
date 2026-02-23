@@ -1,7 +1,7 @@
 import polars as pl
 from scraper import scrape_jobs
 
-#Ingest data
+#Scrape data from linkedin
 def ingest():
     print("Start scrape")
     jobs = scrape_jobs(
@@ -14,4 +14,6 @@ def ingest():
     
     df = pl.from_pandas(jobs)
     df = df["title","company_name","location","description","job_type","job_url"]
+    df = df.filter(pl.col("title").str.contains("Data Engineer"))
     print("Finished scrape")
+    return df
