@@ -5,8 +5,6 @@ import time
 import json
 import requests
 
-# from airflow.models import Variable
-from discord_webhook import DiscordWebhook, DiscordEmbed
 from dotenv import load_dotenv
 
 def send_disc_message(message: str):

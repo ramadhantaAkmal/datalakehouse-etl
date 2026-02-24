@@ -15,15 +15,13 @@ current_date = datetime.date.today()
 
 bucket_name = os.getenv('BUCKET_NAME')
 object_name = f"jobs-result-{current_date}.json"
-# file_path = f"/opt/airflow/lib/jobs-result-weekly/jobs-result-{current_date}.json"
     
 def store_json(json):
     """
     Uploads a file to a MinIO bucket.
     """
     try:
-        # Create a client with the MinIO server playground, its access key
-        # and secret key.
+        
         client = connect_minio()
 
         # Make the bucket if it doesn't exist.

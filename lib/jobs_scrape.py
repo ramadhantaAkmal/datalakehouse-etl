@@ -12,8 +12,10 @@ def ingest():
             linkedin_fetch_description=True
         )
     
+    #filter unnecessary data & columns
     df = pl.from_pandas(jobs)
     df = df["title","company_name","location","description","job_type","job_url"]
     df = df.filter(pl.col("title").str.contains("Data Engineer"))
     print("Finished scrape")
+    
     return df

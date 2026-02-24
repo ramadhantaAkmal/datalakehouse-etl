@@ -38,7 +38,7 @@ def create_table(catalog):
         )
 
         catalog.create_table(
-            identifier=("job_results", "jobs_results_silver"),  # namespace.table_name
+            identifier=("job_results", "jobs_results_silver"),
             schema=schema,
             partition_spec=partition_spec  # or 'day(date)' for daily
         )

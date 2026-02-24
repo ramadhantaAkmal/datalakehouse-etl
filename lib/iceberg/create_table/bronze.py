@@ -37,19 +37,9 @@ def create_table(catalog):
     
         # Partition by 'date' for dated files
         catalog.create_table(
-            identifier=("job_results", "jobs_results_bronze"),  # namespace.table_name
+            identifier=("job_results", "jobs_results_bronze"), 
             schema=schema,
             partition_spec=partition_spec  # or 'day(date)' for daily
         )
-
-        
-        # Iceberg will adopt them if schema matches (run for each new file/date)
-        # Convert Polars to Arrow for append (or use table.add_files() for existing Parquets)
-        # arrow_table = df.to_arrow()# for new data; for existing, use table.add_files("s3://path/to/file.parquet")
-
-        # table.append(arrow_table)  # appends and commits a snapshot
-
-        # Or to add all existing Parquets at once (use glob or list from MinIO)
-        # table.add_files(["s3://my-bucket/jobs-result-weekly/date=2026-01-05/data.parquet", ...])
 
         print("Iceberg bronze table created!")

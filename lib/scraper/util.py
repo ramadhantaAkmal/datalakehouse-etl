@@ -166,13 +166,6 @@ def plain_converter(decription_html:str):
     return text.strip()
 
 
-# def extract_emails_from_text(text: str) -> list[str] | None:
-#     if not text:
-#         return None
-#     email_regex = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
-#     return email_regex.findall(text)
-
-
 def get_enum_from_job_type(job_type_str: str) -> JobType | None:
     """
     Given a string, returns the corresponding JobType enum member if a match is found.
@@ -184,46 +177,10 @@ def get_enum_from_job_type(job_type_str: str) -> JobType | None:
     return res
 
 
-# def currency_parser(cur_str):
-#     # Remove any non-numerical characters
-#     # except for ',' '.' or '-' (e.g. EUR)
-#     cur_str = re.sub("[^-0-9.,]", "", cur_str)
-#     # Remove any 000s separators (either , or .)
-#     cur_str = re.sub("[.,]", "", cur_str[:-3]) + cur_str[-3:]
-
-#     if "." in list(cur_str[-3:]):
-#         num = float(cur_str)
-#     elif "," in list(cur_str[-3:]):
-#         num = float(cur_str.replace(",", "."))
-#     else:
-#         num = float(cur_str)
-
-#     return np.round(num, 2)
-
-
 def remove_attributes(tag):
     for attr in list(tag.attrs):
         del tag[attr]
     return tag
-
-
-# def extract_job_type(description: str):
-#     if not description:
-#         return []
-
-#     keywords = {
-#         JobType.FULL_TIME: r"full\s?time",
-#         JobType.PART_TIME: r"part\s?time",
-#         JobType.INTERNSHIP: r"internship",
-#         JobType.CONTRACT: r"contract",
-#     }
-
-#     listing_types = []
-#     for key, pattern in keywords.items():
-#         if re.search(pattern, description, re.IGNORECASE):
-#             listing_types.append(key)
-
-#     return listing_types if listing_types else None
 
 
 def get_enum_from_value(value_str):

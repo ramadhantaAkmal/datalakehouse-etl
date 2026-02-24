@@ -7,6 +7,7 @@ def run_job_matcher():
     #Fetch json file from s3 Minio
     jobs = fetch_json_file()
 
+    #Input short version CV
     cv = """
                 SUMMARY 
                 Junior Data Engineer with practical experience designing ETL/ELT pipelines and transforming structured & 
