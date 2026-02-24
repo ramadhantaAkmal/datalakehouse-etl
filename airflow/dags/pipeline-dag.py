@@ -10,6 +10,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 from datetime import datetime
 from pendulum import duration
 from main import main
+from job_matcher import run_job_matcher
 
 with DAG(
     dag_id='pipeline-dag',
@@ -28,17 +29,11 @@ with DAG(
         provide_context=True
     )
     
-    run_n8n_task = SimpleHttpOperator(
-        task_id='execute_ai_agent',
-        http_conn_id='workflow_conn',
-        endpoint='/webhook/8606c214-29e4-4dc8-a7ed-6aac1b6f1371',
-        method='GET',
-        headers={
-            'Content-Type': 'application/json',
-            'X-Source': 'Airflow'
-        },
-        response_check=lambda response: response.status_code == 200,
-        log_response=True,
+    
+    job_match_task = PythonOperator(
+        task_id='job_matching_task',
+        python_callable=run_job_matcher,
+        provide_context=True
     )
     
-    scrape_task >> run_n8n_task
+    scrape_task >> job_match_task
