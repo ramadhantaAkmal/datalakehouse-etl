@@ -30,6 +30,12 @@ services:
     networks:
       - ollama-docker
       - superset-net
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     deploy:
       resources:
         reservations:
@@ -39,7 +45,7 @@ services:
               capabilities: [gpu]
   ollama-init:
     image: ollama/ollama:latest
-    container_name: silism-ollama-init
+    container_name: ollama-init
     depends_on:
       ollama:
         condition: service_healthy
@@ -102,3 +108,7 @@ networks:
     external: false
   superset-net:
     external: true
+volumes:
+  ollama_models:
+      driver: local
+      name: ollama_models
