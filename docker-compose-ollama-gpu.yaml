@@ -13,6 +13,7 @@ services:
       - ollama-webui
     networks:
       - ollama-docker
+      - superset-net
       
   ollama:
     volumes:
@@ -28,6 +29,7 @@ services:
       - OLLAMA_KEEP_ALIVE=24h
     networks:
       - ollama-docker
+      - superset-net
     deploy:
       resources:
         reservations:
@@ -35,6 +37,41 @@ services:
             - driver: nvidia
               count: all 
               capabilities: [gpu]
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: silism-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - ollama-docker
+      - superset-net
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: /bin/bash
+    command: >
+      -c "
+      echo '🤖 Ollama server is ready!' &&
+      echo '📥 Checking if mistral model is already installed...' &&
+      if OLLAMA_HOST=http://ollama:11434 ollama list | grep -q ministral-3; then
+        echo '✅ Mistral model already installed'
+      else
+        echo '📥 Pulling mistral model (this may take a few minutes)...' &&
+        OLLAMA_HOST=http://ollama:11434 ollama pull ministral-3 &&
+        echo '✅ Mistral model installed successfully!'
+      fi &&
+      echo '🎉 Ollama initialization complete!' &&
+      sleep infinity
+      "
+    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "OLLAMA_HOST=http://ollama:11434 ollama list | grep -q mistral || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 300s
 
   ollama-webui:
     image: ghcr.io/open-webui/open-webui:main
@@ -58,7 +95,10 @@ services:
     restart: unless-stopped
     networks:
       - ollama-docker
+      - superset-net
 
 networks:
   ollama-docker:
     external: false
+  superset-net:
+    external: true
